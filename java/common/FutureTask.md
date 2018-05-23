@@ -128,6 +128,7 @@ task three null
 ~~~
 > 可知拒绝策略rejectedExecution方法里面什么都没做，所以代码（4）调用submit后会返回一个future对象，这里有必要在重新说future是有状态的，future的状态枚举值如下：
 
+~~~java
     private static final int NEW          = 0;
     private static final int COMPLETING   = 1;
     private static final int NORMAL       = 2;
@@ -135,6 +136,8 @@ task three null
     private static final int CANCELLED    = 4;
     private static final int INTERRUPTING = 5;
     private static final int INTERRUPTED  = 6;
+~~~
+
 > 在步骤（1）的时候使用newTaskFor方法转换Runnable任务为FutureTask，而FutureTask的构造函数里面设置的状态就是New。
 ~~~java
     public FutureTask(Runnable runnable, V result) {
@@ -169,6 +172,7 @@ task three null
 那么默认的AbortPolicy策略为啥没问题那？其实AbortPolicy策略时候步骤（5）直接会抛出RejectedExecutionException异常，也就是submit方法并没有返回future对象，这时候futureThree是null。
 
 所以当使用Future的时候，尽量使用带超时时间的get方法，这样即使使用了DiscardPolicy拒绝策略也不至于一直等待，等待超时时间到了会自动返回的，如果非要使用不带参数的get方法则可以重写DiscardPolicy的拒绝策略在执行策略时候设置该Future的状态大于COMPLETING即可，但是查看FutureTask提供的方法发现只有cancel方法是public的并且可以设置FutureTask的状态大于COMPLETING，重写拒绝策略具体代码可以如下：
+
 ~~~java
 public class MyRejectedExecutionHandler implements RejectedExecutionHandler{
 
@@ -183,6 +187,7 @@ public class MyRejectedExecutionHandler implements RejectedExecutionHandler{
 }
 ~~~
 使用这个策略时候由于从report方法知道在cancel的任务上调用get()方法会抛出异常所以代码（7）需要使用try-catch捕获异常代码（7）修改为如下：
+
 ~~~java
 try{       
     System.out.println("task three " + (futureThree==null?null:futureThree.get()));// (7)等待任务three执行完毕
@@ -192,5 +197,5 @@ try{
  ~~~ 
 执行结果为：
 
-image.png
+![]()
 当然这相比正常情况下多了一个异常捕获，其实最好的情况是重写拒绝策略时候设置FutureTask的状态为NORMAL，但是这需要重写FutureTask方法了，因为FutureTask并没有提供接口进行设置。
