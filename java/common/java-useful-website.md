@@ -1,18 +1,5 @@
-# book-note
-book-note
-~~~
-├─database
-│  └─mysql
-├─java
-│  ├─common
-│  ├─jvm
-│  └─netty
-├─message-queue
-│  ├─rabbitmq
-│  └─rocketmq
-└─python
-~~~
-## common use website
+
+## java 常用的网站
 
 - [github trending](https://github.com/trending/java)
 
