@@ -4,7 +4,7 @@
 
 ## 问题复现
 为了复现该问题，编写如下代码：
-~~~
+~~~java
 public class TestSimpleDateFormat {
     //(1)创建单例实例
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -38,7 +38,7 @@ public class TestSimpleDateFormat {
 可知每个SimpleDateFormat实例里面有一个Calendar对象，从后面会知道其实SimpleDateFormat之所以是线程不安全的就是因为Calendar是线程不安全的，后者之所以是线程不安全的是因为其中存放日期数据的变量都是线程不安全的，比如里面的fields，time等。
 
 下面从代码层面看下parse方法做了什么事情：
-~~~
+~~~java
  public Date parse(String text, ParsePosition pos)
     {
        
@@ -60,7 +60,7 @@ public class TestSimpleDateFormat {
     }
 ~~~
 
-~~~
+~~~java
 Calendar establish(Calendar cal) {
    ...
    //（3）重置日期对象cal的属性值
@@ -74,7 +74,7 @@ Calendar establish(Calendar cal) {
 
 * 代码（1）主要的作用是解析字符串日期并把解析好的数据放入了 CalendarBuilder的实例calb中，CalendarBuilder是一个建造者模式，用来存放后面需要的数据。
 * 代码（3）重置Calendar对象里面的属性值，如下代码：
-~~~
+~~~java
  public final void clear()
    {
        for (int i = 0; i < fields.length; ) {
@@ -95,7 +95,7 @@ Calendar establish(Calendar cal) {
 
 * 第一种方式：每次使用时候new一个SimpleDateFormat的实例，这样可以保证每个实例使用自己的Calendar实例,但是每次使用都需要new一个对象，并且使用后由于没有其它引用，就会需要被回收，开销会很大。
 * 第二种方式：究其原因是因为多线程下步骤（3）（4）（5）三个步骤不是一个原子性操作，那么容易想到的是对其进行同步，让（3）（4）（5）成为原子操作，可以使用synchronized进行同步，具体如下：
-~~~
+~~~java
 public class TestSimpleDateFormat {
     // (1)创建单例实例
     static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -122,7 +122,7 @@ public class TestSimpleDateFormat {
 使用同步意味着多个线程要竞争锁，在高并发场景下会导致系统响应性能下降。
 
 * 第三种方式：使用ThreadLocal，这样每个线程只需要使用一个SimpleDateFormat实例相比第一种方式大大节省了对象的创建销毁开销，并且不需要对多个线程直接进行同步，使用ThreadLocal方式代码如下：
-~~~
+~~~java
 public class TestSimpleDateFormat2 {
     // (1)创建threadlocal实例
     static ThreadLocal<DateFormat> safeSdf = new ThreadLocal<DateFormat>(){

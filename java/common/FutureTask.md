@@ -1,10 +1,11 @@
 # 线程池使用FutureTask时候需要注意的一点事
+
 8.4 线程池使用FutureTask时候需要注意的一点事
 线程池使用FutureTask的时候如果拒绝策略设置为了 DiscardPolicy和DiscardOldestPolicy并且在被拒绝的任务的Future对象上调用无参get方法那么调用线程会一直被阻塞。
 
 问题复现
 下面就通过一个简单的例子来复现问题：
-~~~
+~~~java
 public class FutureTest {
 
     //(1)线程池单个线程，线程池队列元素个数为1
@@ -74,7 +75,7 @@ task three null
 ~~~
 ## 问题分析
 要分析这个问题需要看下线程池的submit方法里面做了什么，submit方法代码如下：
-~~~
+~~~java
     public Future<?> submit(Runnable task) {
         ...
         //（1）装饰Runnable为Future对象
@@ -118,7 +119,7 @@ task three null
 * 代码（4）尝试新增处理线程进行处理，失败则进行代码（5），否者直接使用新线程处理
 * 代码（5）执行具体拒绝策略。
 > 所以要分析上面例子中问题所在只需要看步骤（5）对被拒绝任务的影响，这里先看下拒绝策略DiscardPolicy的代码：
-~~~
+~~~java
     public static class DiscardPolicy implements RejectedExecutionHandler {
         public DiscardPolicy() { }
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
@@ -135,7 +136,7 @@ task three null
     private static final int INTERRUPTING = 5;
     private static final int INTERRUPTED  = 6;
 > 在步骤（1）的时候使用newTaskFor方法转换Runnable任务为FutureTask，而FutureTask的构造函数里面设置的状态就是New。
-~~~
+~~~java
     public FutureTask(Runnable runnable, V result) {
         this.callable = Executors.callable(runnable, result);
         this.state = NEW;       // ensure visibility of callable
@@ -143,7 +144,7 @@ task three null
 ~~~
 所以使用DiscardPolicy策略提交后返回了一个状态为NEW的future对象。
 那么我们下面就需要看下当调用future的无参get方法时候当future变为什么状态时候才会返回那,那就需看下FutureTask的get（）方法代码：
-~~~
+~~~java
     public V get() throws InterruptedException, ExecutionException {
         int s = state;
         //当状态值<=COMPLETING时候需要等待，否者调用report返回
@@ -168,7 +169,7 @@ task three null
 那么默认的AbortPolicy策略为啥没问题那？其实AbortPolicy策略时候步骤（5）直接会抛出RejectedExecutionException异常，也就是submit方法并没有返回future对象，这时候futureThree是null。
 
 所以当使用Future的时候，尽量使用带超时时间的get方法，这样即使使用了DiscardPolicy拒绝策略也不至于一直等待，等待超时时间到了会自动返回的，如果非要使用不带参数的get方法则可以重写DiscardPolicy的拒绝策略在执行策略时候设置该Future的状态大于COMPLETING即可，但是查看FutureTask提供的方法发现只有cancel方法是public的并且可以设置FutureTask的状态大于COMPLETING，重写拒绝策略具体代码可以如下：
-~~~
+~~~java
 public class MyRejectedExecutionHandler implements RejectedExecutionHandler{
 
     @Override
@@ -182,7 +183,7 @@ public class MyRejectedExecutionHandler implements RejectedExecutionHandler{
 }
 ~~~
 使用这个策略时候由于从report方法知道在cancel的任务上调用get()方法会抛出异常所以代码（7）需要使用try-catch捕获异常代码（7）修改为如下：
-~~~
+~~~java
 try{       
     System.out.println("task three " + (futureThree==null?null:futureThree.get()));// (7)等待任务three执行完毕
  }catch(Exception e){
