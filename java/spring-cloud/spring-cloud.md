@@ -73,3 +73,47 @@ imports {
     }
 }
 ~~~
+3. 在 EurekaServerApplication 上加上~@EnableEurekaServer~
+4. 在 application.properties 中加入如下内容：
+
+~~~properties
+server.port=10000
+eureka.instance.hostname=localhost
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+eureka.client.service-url.defaultZone=http://${eureka.instance.hostname}:${server.port}/eureka/
+~~~
+
+5. 启动代码并访问 http://localhost:10000/
+
+### 注册客户端到 eureka 服务器
+
+1. 根据上面服务器的方式再次建立项目，但是需要在 Spring Boot 中多选择 Web 模块。 建立项目名称叫做 hello-service
+2. 在在 EurekaClientApplication 上加上@EnableEurekaClient
+3. 建立 RESTful 风格的控制器
+~~~java
+package com.example.eurekaclient1.controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+@RestController
+public class HomeController {
+        @RequestMapping
+        public String home() {
+        return "Hello, World";
+        }
+}
+~~~
+4. 在 application.properties 中加入如下内容：
+~~~properties
+spring.application.name=hello-service
+eureka.client.service-url.defaultZone=http://localhost:10000/eureka
+~~~
+5. 启动该程序，在浏览器访问 http://localhost:8080/
+6. 我们在该客户端输出中看到类似内容：
+DiscoveryClient_HELLO-SERVICE/Peters-MacBook.local:hello-service: registering service...
+DiscoveryClient_HELLO-SERVICE/Peters-MacBook.local:hello-service - registration status:
+204
+7. 在服务器的另一端看到类似输出：
+Registered instance HELLO-SERVICE/Peters-MacBook.local:hello-service with status UP
+(replication=false)
+8. 访问 http://localhost:10000 
