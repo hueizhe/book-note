@@ -1,4 +1,4 @@
-## ReentrantLock源代码分析
+## 源代码分析
 
 ## 什么是AQS
 
@@ -33,17 +33,17 @@ protected final boolean tryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
             if (c == 0) {
-// c=0 说明没有其他线程占有锁
+                // c=0 说明没有其他线程占有锁
                 if (!hasQueuedPredecessors() &&
                     compareAndSetState(0, acquires)) {
-// 队列中没有其他线程在等待锁，而且CAS把state设置成入参的值成功，这里是1（这里的CAS就是我
-// 们前文提的并发竞争机制），则当前线程获取锁成功并将owner线程设置为当前线程
+                    // 队列中没有其他线程在等待锁，而且CAS把state设置成入参的值成功，这里是1（这里的CAS就是我
+                    // 们前文提的并发竞争机制），则当前线程获取锁成功并将owner线程设置为当前线程
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
             else if (current == getExclusiveOwnerThread()) {
-// 可重入设置，当前线程重复请求锁成功，只是增加请求锁的计数
+                // 可重入设置，当前线程重复请求锁成功，只是增加请求锁的计数
                 int nextc = c + acquires;
                 if (nextc < 0)
                     throw new Error("Maximum lock count exceeded");
@@ -83,11 +83,11 @@ private Node enq(final Node node) {
         for (;;) {
             Node t = tail;
             if (t == null) { // Must initialize
-// 最开始head和tail都是空的，需要通过CAS做初始化，如果CAS失败，则循环重新检查tail
+                // 最开始head和tail都是空的，需要通过CAS做初始化，如果CAS失败，则循环重新检查tail
                 if (compareAndSetHead(new Node()))
                     tail = head;
             } else {
-// head和tail不是空的，说明已经完成初始化，和addWaiter方法的上半段一样，CAS修改
+                // head和tail不是空的，说明已经完成初始化，和addWaiter方法的上半段一样，CAS修改
                 node.prev = t;
                 if (compareAndSetTail(t, node)) {
                     t.next = node;
@@ -112,15 +112,14 @@ final boolean acquireQueued(final Node node, int arg) {
 * 里是个循环，其他刚被唤醒的线程也会执行到这个代码
 */
                 if (p == head && tryAcquire(arg)) {
-// 队首且获取锁成功，把当前节点设置成head，下一个节点成了等待队列的队首
+                    // 队首且获取锁成功，把当前节点设置成head，下一个节点成了等待队列的队首
                     setHead(node);
                     p.next = null; // help GC
                     failed = false;
                     return interrupted;
                 }
-/* shouldParkAfterFailedAcquire方法判断如果获取锁失败是否需要阻塞，如果需要的话就执行
-*  parkAndCheckInterrupt方法，如果不需要就继续循环
-*/
+                //shouldParkAfterFailedAcquire方法判断如果获取锁失败是否需要阻塞，如果需要的话就执行
+                //parkAndCheckInterrupt方法，如果不需要就继续循环
                 if (shouldParkAfterFailedAcquire(p, node) &&
                     parkAndCheckInterrupt())
                     interrupted = true;
@@ -130,8 +129,9 @@ final boolean acquireQueued(final Node node, int arg) {
                 cancelAcquire(node);
         }
     }
+~~~
 下面看一下shouldParkAfterFailedAcquire方法：
-
+~~~java
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 // 获取pred前置节点的等待状态
         int ws = pred.waitStatus;
@@ -140,9 +140,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
              * This node has already set status asking a release
              * to signal it, so it can safely park.
              */
-/* 前置节点状态是signal，那当前节点可以安全阻塞，因为前置节点承诺执行完之后会通知唤醒当前
-* 节点
-*/
+        // 前置节点状态是signal，那当前节点可以安全阻塞，因为前置节点承诺执行完之后会通知唤醒当前节点
             return true;
         if (ws > 0) {
 
@@ -150,7 +148,7 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
              * Predecessor was cancelled. Skip over predecessors and
              * indicate retry.
              */
-// 前置节点如果已经被取消了，则一直往前遍历直到前置节点不是取消状态，与此同时会修改链表关系
+            // 前置节点如果已经被取消了，则一直往前遍历直到前置节点不是取消状态，与此同时会修改链表关系
             do {
                 node.prev = pred = pred.prev;
             } while (pred.waitStatus > 0);
@@ -173,20 +171,20 @@ private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
 
 ~~~java
 private final boolean parkAndCheckInterrupt() {
-// 阻塞当前线程，监事是当前sync对象
+        // 阻塞当前线程，监事是当前sync对象
         LockSupport.park(this);
-// 阻塞返回后，返回当前线程是否被中断
+        // 阻塞返回后，返回当前线程是否被中断
         return Thread.interrupted();
     }
 park方法
 
 public static void park(Object blocker) {
         Thread t = Thread.currentThread();
-// 设置当前线程的监视器blocker
+        // 设置当前线程的监视器blocker
         setBlocker(t, blocker);
-// 这里调用了native方法到JVM级别的阻塞机制阻塞当前线程
+        // 这里调用了native方法到JVM级别的阻塞机制阻塞当前线程
         UNSAFE.park(false, 0L);
-// 阻塞结束后把blocker置空
+        // 阻塞结束后把blocker置空
         setBlocker(t, null);
     }
 ~~~
@@ -214,18 +212,18 @@ public final boolean release(int arg) {
 我们先看tryRelease方法：
 ~~~java
 protected final boolean tryRelease(int releases) {
-// 释放后c的状态值
+            // 释放后c的状态值
             int c = getState() - releases;
-// 如果持有锁的线程不是当前线程，直接抛出异常
+            // 如果持有锁的线程不是当前线程，直接抛出异常
             if (Thread.currentThread() != getExclusiveOwnerThread())
                 throw new IllegalMonitorStateException();
             boolean free = false;
             if (c == 0) {
-// 如果c==0，说明所有持有锁都释放完了，其他线程可以请求获取锁
+                // 如果c==0，说明所有持有锁都释放完了，其他线程可以请求获取锁
                 free = true;
                 setExclusiveOwnerThread(null);
             }
-// 这里只会有一个线程执行到这，不存在竞争，因此不需要CAS
+            // 这里只会有一个线程执行到这，不存在竞争，因此不需要CAS
             setState(c);
             return free;
         }
@@ -242,7 +240,8 @@ private void unparkSuccessor(Node node) {
         if (ws < 0)
 /*
 如果状态小于0，把状态改成0，0是空的状态，因为node这个节点的线程释放了锁后续不需要做任何
-操作，不需要这个标志位，即便CAS修改失败了也没关系，其实这里如果只是对于锁来说根本不需要CAS，因为这个方法只会被释放锁的线程访问，只不过unparkSuccessor这个方法是AQS里的方法就必须考虑到多个线程同时访问的情况（可能共享锁或者信号量这种）
+操作，不需要这个标志位，即便CAS修改失败了也没关系，其实这里如果只是对于锁来说根本不需要CAS，因为这个方法只会被释放锁的线程访问，
+只不过unparkSuccessor这个方法是AQS里的方法就必须考虑到多个线程同时访问的情况（可能共享锁或者信号量这种）
 */
             compareAndSetWaitStatus(node, ws, 0);
 
