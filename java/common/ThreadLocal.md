@@ -212,11 +212,13 @@ void createMap(Thread t, T firstValue) {
  
 // Thread中的源码
  
-/* ThreadLocal values pertaining to this thread. This map is maintained
- * by the ThreadLocal class. */
+/**
+  ThreadLocal values pertaining to this thread. This map is maintained
+  by the ThreadLocal class. 
+ */
 ThreadLocal.ThreadLocalMap threadLocals = null;
  
-/*
+/**
  * InheritableThreadLocal values pertaining to this thread. This map is
  * maintained by the InheritableThreadLocal class.
  */
@@ -224,7 +226,8 @@ ThreadLocal.ThreadLocalMap inheritableThreadLocals = null;
 ~~~
 仔细想想其实就能够理解这种设计的思想。有一种普遍的方法是通过一个全局的线程安全的Map来存储各个线程的变量副本，但是这种做法已经完全违背了ThreadLocal的本意，设计ThreadLocal的初衷就是为了避免多个线程去并发访问同一个对象，尽管它是线程安全的。而在每个Thread中存放与它关联的ThreadLocalMap是完全符合ThreadLocal的思想的，当想要对线程局部变量进行操作时，只需要把Thread作为key来获得Thread中的ThreadLocalMap即可。这种设计相比采用一个全局Map的方法会多占用很多内存空间，但也因此不需要额外的采取锁等线程同步方法而节省了时间上的消耗。
 
-ThreadLocal中的内存泄漏
+## ThreadLocal中的内存泄漏
+
 我们要考虑一种会发生内存泄漏的情况，如果ThreadLocal被设置为null后，而且没有任何强引用指向它，根据垃圾回收的可达性分析算法，ThreadLocal将会被回收。这样一来，ThreadLocalMap中就会含有key为null的Entry，而且ThreadLocalMap是在Thread中的，只要线程迟迟不结束，这些无法访问到的value会形成内存泄漏。为了解决这个问题，ThreadLocalMap中的getEntry()、set()和remove()函数都会清理key为null的Entry，以下面的getEntry()函数的源码为例。
 
 ~~~java
