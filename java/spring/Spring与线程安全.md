@@ -45,4 +45,5 @@ There are several ways, probably too long to list here but here are a few exampl
 
 >引用
 [are-spring-objects-thread-safe](https://stackoverflow.com/questions/15745140/are-spring-objects-thread-safe)
+
 [spring-singleton-request-session-beans-and-thread-safety/](https://tarunsapra.wordpress.com/2011/08/21/spring-singleton-request-session-beans-and-thread-safety/)
