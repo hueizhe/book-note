@@ -3,10 +3,10 @@
 ### 前置条件
 假定安装了以下软件:
 
-推荐64bit OS, Linux/Unix/Mac系统;
-64bit JDK 1.8+;
-Maven 3.2.x
-Git
+- 推荐64bit OS, Linux/Unix/Mac系统;
+- 64bit JDK 1.8+;
+- Maven 3.2.x
+- Git
 
 
 ### 从发布版下载并构建
