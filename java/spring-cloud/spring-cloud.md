@@ -178,3 +178,92 @@ server.port=10003
 eureka.client.service-url.defaultZone=http://localhost:10000/eureka/
 ~~~
 6. 通过 localhost:10003/ribbon-consumer 发起请求，得到 hello，world
+
+## Spring Cloud Ribbon
+
+### 什么是 Spring Cloud Ribbon
+
+Spring Cloud Ribbon 是一个基于 HTTP 和 TCP 的客户端负载均衡工具，它基于 Netflix Ribbon 实现。通过 Spring Cloud 的封
+装，可以让我们轻松地将面向服务的 REST 模版请求自动转换成客户端负责均衡的服务调用。
+
+- 客户端负载均衡
+客户端负载均衡和服务器端负载均衡最大的不同点在于服务清单所存储的位置。在客户端负载均衡中，所有客户端节点都护着自己要
+访问的服务端清单，而这种服务端的清单来自于服务注册中心（比如 Eureka 客户端）。同服务端负载均更的架构类似，在客户端负
+载均衡中也需要心跳去维护服务器端清单的健康性，只是这个步骤需要配合服务注册中心来完成。
+
+在 Spring Cloud 实现的服务治理框架中，默认会创建针对各个服务治理框架的 Ribbon 自动化整合配置。
+通过 Spring Cloud Ribbon 的封装，我们在微服务架构中使用客户端负载均衡调用非常简单：
+1. 服务提供者只需要启动多个服务实例并注册到一个注册中心或是多个相关联的服务注册中心
+2. 服务消费者直接通过调用@LoadBalanced 注解修饰过的 RestTemplate 来实现面向服务的接口调用
+~~~java
+@SpringBootApplication
+@EnableDiscoveryClient
+public class RibbonConsumerApplication {
+@Bean
+@LoadBalanced
+RestTemplate restTemplate() {
+return new RestTemplate();
+}
+public static void main(String[] args) {
+SpringApplication.run(RibbonConsumerApplication.class, args);
+}
+}
+~~~
+
+~~~java
+package com.example.ribbonconsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+@RestController
+public class ConsumerController {
+@Autowired
+private RestTemplate restTemplate;
+@RequestMapping("/ribbon-consumer")
+public String helloConsumer() {
+return restTemplate
+.getForEntity("http://HELLO-SERVICE/", String.class)
+.getBody();
+}
+}
+~~~
+3. 在 application.properties 中加入
+~~~properties
+spring.application.name=ribbon-consumer
+server.port=1000
+eureka.client.service-url.defaultZone=http://peer1:10000/eureka/
+eureka.server.enable-self-preservation=false
+~~~
+4. 启动 ribbon-consumer，观察它的控制台信息。 Robbin 输出了当前客户端维护的 HELLO-SERVICE 的服务列表情况。其
+中包含了各个实例的位置，Ribbon 就是按照此信息进行轮询访问，以实现基于客户端的负载均衡。另外还输出了一些非常
+有用的信息，如对各个实例的请求总数量、第一次连接信息，上一次连接信息，总的请求失败数量等。
+
+5. 再次尝试发送几次请求，并观察 HELLO-SERVICE 控制台，可以看到两个控制台交替打印日志（日志中包含了我们代码中的
+输出），由此可以判断当前 ribbon-consumer 对 HELLO-SERVICE 的调用是负载均衡的。
+### RestTemplate 详解
+- GET 请求
+在 RestTemplate 中，对 GET 请求可以通过如下两种方式进行调用实现：
+1. getForEntity 方法。该方法的返回值时 ResponseEntity，该对象时 Spring 对 HTTP 请求响应的封装，其中主要存储了
+HTTP 的几个重要元素，比如请求状态码的枚举对象 HttpStatus，在它的父类 HttpEntity 中还存储着 HTTP 请求的头信息
+对象 HttpHeaders 以及范型类型的请求体对象，比如：
+~~~java
+RestTemplate restTemplate = new RestTemplate();
+ResponseEntity<String> responseEntity = restTemplate.getForEntity(http://USERSERVICE/user?name={1}, String.class, "tom");
+String body = responseEntity.getBody();
+~~~
+或者
+~~~java
+ResponseEntity<User> responseEntity = restTemplate.getForEntity(http://USERSERVICE/user?name={1}, User.class, "tom");
+String body = responseEntity.getBody();
+~~~
+2. getForObject 方法。该方法可以理解为 getFotEntity 的进一步封装，它通过 HttpMessageConverterExtractor 对 HTTP
+的请求响应体 body 内容进行对象转换，实现请求直接返回包装好的对象内容，比如：
+~~~java
+RestTemplate restTemplate = new RestTemplate();
+String result = restTemplate.getForObject(uri, String.class);
+~~~
+或者
+~~~java
+User result = restTemplate.getForObject(uri, User.class);
+~~~
+当不需要关注请求响应除了 body 外的其它内容时，该函数非常好用。
