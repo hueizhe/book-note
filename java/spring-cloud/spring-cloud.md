@@ -117,3 +117,64 @@ DiscoveryClient_HELLO-SERVICE/Peters-MacBook.local:hello-service - registration 
 Registered instance HELLO-SERVICE/Peters-MacBook.local:hello-service with status UP
 (replication=false)
 8. 访问 http://localhost:10000 
+
+
+### 服务发现与消费
+
+1. 建立 Spring Boot 项目命名为 ribbon-consumer，加入如下依赖：
+~~~groovy
+compile('org.springframework.boot:spring-boot-starter-web')
+compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-server')
+compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
+~~~
+
+2. 启动 2 个服务注册中心和 2 个 hello-service 服务并运行在不同端口
+
+3. 在 RibbonConsumerApplication 加入如下内容：
+~~~java
+package com.example.ribbonconsumer;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+@SpringBootApplication
+@EnableDiscoveryClient
+public class RibbonConsumerApplication {
+@Bean
+@LoadBalanced
+RestTemplate restTemplate() {
+    return new RestTemplate();
+}
+public static void main(String[] args) {
+    SpringApplication.run(RibbonConsumerApplication.class, args);
+}
+}
+~~~
+4. 创建 ConsumerController
+~~~java
+package com.example.ribbonconsumer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+@RestController
+public class ConsumerController {
+@Autowired
+private RestTemplate restTemplate;
+@RequestMapping("/ribbon-consumer")
+        public String helloConsumer() {
+            return restTemplate.getForEntity("http://HELLO-SERVICE/", String.class).getBody();
+        }
+}
+~~~
+注意 http://HELLO-SERVICE/
+
+5. 修改 application.properties
+~~~properties
+spring.application.name=ribbon-consumer
+server.port=10003
+eureka.client.service-url.defaultZone=http://localhost:10000/eureka/
+~~~
+6. 通过 localhost:10003/ribbon-consumer 发起请求，得到 hello，world
