@@ -1,5 +1,5 @@
 ##  译文：RabbitMQ 消费者确认和发布者确认 
-原文链接 译者：flystarfly
+[原文链接](https://www.rabbitmq.com/confirms.html) 译者：flystarfly
 
 ### 介绍
 使用消息代理（如RabbitMQ）的系统按定义分发。 由于发送的协议方法（消息）不能保证到达对方或被成功处理，所以发布者和消费者都需要一个交付和处理确认的机制。 RabbitMQ支持的一些消息协议提供了这样的功能。 本指南涵盖AMQP 0-9-1中的特性，但其他协议（STOMP，MQTT等）中的思路大致相同。
