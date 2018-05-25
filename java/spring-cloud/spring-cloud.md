@@ -33,4 +33,43 @@ Spring Cloud Eureka 是 Spring Cloud Netflix 微服务套件中的一部分，�
 Eureka 客户端向注册中心注册自身提供的服务并周期性的发送心跳来更新它的服务租约。同时它也能从服务端查询当前注册的服务
 信息并把它们缓存到本地并周期性的刷新服务状态。
 
-
+### 构建服务注册中心
+1. http://start.spring.io/ 使用 Gradle 或 Maven 建立 Spring Boot 2.0 版本工程，并勾选
+    建议将 Artifact 设定为 eureka-server。 之后将下载的项目导入 IDEA 或 Eclipse 等 IDE 中。
+2. build.gradle 文件的内容如下：
+~~~groovy
+buildscript {
+ext {
+    springBootVersion = '2.0.0.RELEASE'
+}
+repositories {
+mavenCentral()
+}
+dependencies {
+    classpath("org.springframework.boot:spring-boot-gradleplugin:${springBootVersion}")
+    }
+}
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+repositories {
+mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }
+}
+ext {
+    springCloudVersion = 'Finchley.M8'
+}
+dependencies {
+    compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-server')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+dependencyManagement {
+imports {
+    mavenBom "org.springframework.cloud:spring-clouddependencies:${springCloudVersion}"
+    }
+}
+~~~
