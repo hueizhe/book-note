@@ -43,3 +43,24 @@ docker run -p 3306:3306   --name mysql \
 3. 容器启动之后就可以访问web 管理端了
 
     http://宿主机IP:15672  默认创建了一个 guest 用户，密码也是 guest。
+    
+
+docker exec -it mymysql bash
+
+
+
+---
+
+git
+
+mkdir -p ~/srv/gitlab/config ~/srv/gitlab/logs ~/srv/gitlab/data
+
+docker run --detach \
+    --hostname 47.104.65.225 \
+    --publish 443:443 --publish 8089:80 --publish 2289:22 \
+    --name gitlab \
+    --restart always \
+    --volume ~/srv/gitlab/config:/etc/gitlab:Z \
+    --volume ~/srv/gitlab/logs:/var/log/gitlab:Z \
+    --volume ~/srv/gitlab/data:/var/opt/gitlab:Z \
+    gitlab/gitlab-ce:latest
