@@ -42,4 +42,4 @@ docker run -p 3306:3306   --name mysql \
     ~~~
 3. 容器启动之后就可以访问web 管理端了
 
-    http://宿主机IP:15672，默认创建了一个 guest 用户，密码也是 guest。
+    http://宿主机IP:15672  默认创建了一个 guest 用户，密码也是 guest。
