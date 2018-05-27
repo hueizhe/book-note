@@ -52,7 +52,7 @@ docker exec -it mysql bash
 
 ---
 
-### docker-gitlb
+### docker-gitlab
 ~~~bash
 mkdir -p ~/srv/gitlab/config ~/srv/gitlab/logs ~/srv/gitlab/data
 ~~~
