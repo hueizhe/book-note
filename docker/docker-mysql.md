@@ -21,8 +21,9 @@ docker run -p 3306:3306   --name mysql \
             -e MYSQL_ROOT_PASSWORD=root -d mysql:5.7
 21cb89213c93d805c5bacf1028a0da7b5c5852761ba81327e6b99bb3ea89930e
 ~~~
-
-
+~~~bash
+docker exec -it mysql bash
+~~~
 
 ## 使用Docker安装部署RabbitMQ
 
@@ -45,16 +46,17 @@ docker run -p 3306:3306   --name mysql \
     http://宿主机IP:15672  默认创建了一个 guest 用户，密码也是 guest。
     
 
-docker exec -it mymysql bash
+
 
 
 
 ---
 
-git
-
+### docker-gitlb
+~~~bash
 mkdir -p ~/srv/gitlab/config ~/srv/gitlab/logs ~/srv/gitlab/data
-
+~~~
+~~~bash
 docker run --detach \
     --hostname 47.104.65.225 \
     --publish 443:443 --publish 8089:80 --publish 2289:22 \
@@ -64,3 +66,4 @@ docker run --detach \
     --volume ~/srv/gitlab/logs:/var/log/gitlab:Z \
     --volume ~/srv/gitlab/data:/var/opt/gitlab:Z \
     gitlab/gitlab-ce:latest
+~~~
