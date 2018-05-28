@@ -16,11 +16,13 @@ $ make && make install
 ### 2. nginx 服务的启停
     
  获取pid
-    - ps -ef | grep nginx
-    - 在nginx服务启动后，在nginx安装目录下的logs目录中会产生文件名为nginx.pid的文件，此文件保存的就是nginx服务主进程的pid
-~~~bash
-    cat ./logs/nginx.pid
-~~~
+
+ - ps -ef | grep nginx
+ 
+ - 在nginx服务启动后，在nginx安装目录下的logs目录中会产生文件名为nginx.pid的文件，此文件保存的就是nginx服务主进程的pid
+    ~~~bash
+        cat ./logs/nginx.pid
+    ~~~
 
 nginx 服务可接收的信号
 
