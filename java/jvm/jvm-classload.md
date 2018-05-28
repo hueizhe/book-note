@@ -120,3 +120,10 @@
     4. 由于操作系统出现错误而导致Java虚拟机进程终止
 
 ### 3. 类加载器
+
+
+
+
+> 参考文章
+
+1. [java类的加载机制](http://www.cnblogs.com/ityouknow/p/5603287.html)
