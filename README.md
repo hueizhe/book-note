@@ -4,6 +4,7 @@ book-note
 ├─database
 │  ├─mysql
 │  └─postgresql
+├─docker
 ├─java
 │  ├─common
 │  ├─dubbo
@@ -12,11 +13,14 @@ book-note
 │  ├─spring
 │  └─spring-cloud
 ├─message-queue
+│  ├─kafka
 │  ├─rabbitmq
 │  └─rocketmq
 ├─python
 └─tools
-    └─git
+    ├─git
+    └─nginx
+
 ~~~
 ## common use website
 
