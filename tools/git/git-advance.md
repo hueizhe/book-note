@@ -1,5 +1,9 @@
 ## git 高级用法
 
+## git process
+![git]()
+
+
 ## git alias
 ~~~bash
 git config --global alias.co checkout
