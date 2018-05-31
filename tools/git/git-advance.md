@@ -1,7 +1,7 @@
 ## git 高级用法
 
 ## git process
-![git]()
+![git](https://github.com/hueizhe/book-note/blob/master/tools/image/git.png)
 
 
 ## git alias
