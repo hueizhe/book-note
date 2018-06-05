@@ -51,3 +51,7 @@ Send shutdown request to mqbroker(36695) OK
 The mqnamesrv(36664) is running...
 Send shutdown request to mqnamesrv(36664) OK
 ~~~
+
+>参考资料
+
+- [分布式开放消息系统(RocketMQ)的原理与实践](https://www.jianshu.com/p/453c6e7ff81c)
