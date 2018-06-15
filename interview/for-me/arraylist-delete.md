@@ -61,7 +61,6 @@ ListIterator listIterator = list.listIterator();
         while(listIterator.hasNext()){  
             int  value = (Integer)listIterator.next();  
             if (2==value) {  
-                //aList.remove(str);   // 集合自身的remove()方法删除  
                 listIterator.remove(); //迭代器的remove() 方法删除  
             }  
         }
@@ -83,7 +82,6 @@ ListIterator listIterator = list.listIterator();
             int  value = (Integer)listIterator.next();  
             if (2==value) {  
                 list.remove(value);   // 集合自身的remove()方法删除  
-               // listIterator.remove(); //迭代器的remove() 方法删除  
             }  
         }  
 ~~~
