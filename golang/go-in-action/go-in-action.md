@@ -39,5 +39,5 @@
 - [Part 13: Distributed persistence with CockroachDB and GORM](http://callistaenterprise.se/blogg/teknik/2017/02/17/go-blog-series-part13/)
 - [Part 14: GraphQL with Go](http://callistaenterprise.se/blogg/teknik/2017/02/17/go-blog-series-part14/)
 
-Getting Started with Microservices using Go, gRPC and Kubernetes
-How To Build Microservice With MongoDB In Golang
+- [Getting Started with Microservices using Go, gRPC and Kubernetes](https://outcrawl.com/getting-started-microservices-go-grpc-kubernetes/)
+- [How To Build Microservice With MongoDB In Golang](http://goinbigdata.com/how-to-build-microservice-with-mongodb-in-golang/)
