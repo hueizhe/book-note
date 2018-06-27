@@ -42,8 +42,7 @@ Here's a small snippet:
 ~~~java
 @Configuration
 @ConditionalOnWebApplication
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
-WebMvcConfigurerAdapter.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
@@ -64,8 +63,7 @@ Let's look at another small snippet showing one of the methods from the same cla
 ~~~java
     @Bean
     @ConditionalOnBean(ViewResolver.class)
-    @ConditionalOnMissingBean(name = "viewResolver", 
-    value = ContentNegotiatingViewResolver.class)
+    @ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)
     public ContentNegotiatingViewResolver  viewResolver(BeanFactory beanFactory) {
       ContentNegotiatingViewResolver resolver = new   ContentNegotiatingViewResolver();
       resolver.setContentNegotiationManager (beanFactory.getBean(ContentNegotiationManager.class));
