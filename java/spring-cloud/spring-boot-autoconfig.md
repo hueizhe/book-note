@@ -36,7 +36,7 @@ org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
 
 The preceding list of auto-configuration classes is run whenever a Spring Boot application is launched. Let's take a quick look at one of them:
 
-- org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.
+`org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.`
 
 Here's a small snippet:
 ~~~java
@@ -51,13 +51,13 @@ public class WebMvcAutoConfiguration { }
 
 Some of the important points to note are as follows:
 
-- @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurerAdapter.class }) : 
+- `@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, WebMvcConfigurerAdapter.class }) `: 
     This auto-configuration is enabled if any of the mentioned classes are in the classpath. When we add a web starter project, we bring in dependencies with all these classes. Hence, this auto-configuration will be enabled.
 
-- @ConditionalOnMissingBean(WebMvcConfigurationSupport.class): 
+- `@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)`: 
     This auto-configuration is enabled only if the application does not explicitly declare a bean of the WebMvcConfigurationSupport.class class.
     
-- @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10): This specifies the precedence of this specific auto-configuration.
+- `@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)`: This specifies the precedence of this specific auto-configuration.
 
 Let's look at another small snippet showing one of the methods from the same class:
 ~~~java
@@ -75,8 +75,8 @@ View resolvers are one of the beans configured by WebMvcAutoConfiguration class.
 
 the application, then Spring Boot auto-configures a default view resolver. Here are a few important points to note:
 
-- @ConditionalOnBean(ViewResolver.class): Create this bean if ViewResolver.class is on the classpath
-- @ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class): Create this bean if there are no explicitly declared beans of the name viewResolver and of type ContentNegotiatingViewResolver.class
+- `@ConditionalOnBean(ViewResolver.class)`: Create this bean if ViewResolver.class is on the classpath
+- `@ConditionalOnMissingBean(name = "viewResolver", value = ContentNegotiatingViewResolver.class)`: Create this bean if there are no explicitly declared beans of the name viewResolver and of type ContentNegotiatingViewResolver.class
 - The rest of the method is configured in the view resolver
 
 To summarize, all the auto-configuration logic is executed at the start of a Spring Boot application. If a specific class (from a specific dependency or starter project) is available on the classpath, then the auto configuration classes are executed. These auto-configuration classes look at what beans are already configured. Based on the existing beans, they enable the creation of the default beans.
