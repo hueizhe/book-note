@@ -66,12 +66,9 @@ Let's look at another small snippet showing one of the methods from the same cla
     @ConditionalOnBean(ViewResolver.class)
     @ConditionalOnMissingBean(name = "viewResolver", 
     value = ContentNegotiatingViewResolver.class)
-    public ContentNegotiatingViewResolver 
-    viewResolver(BeanFactory beanFactory) {
-      ContentNegotiatingViewResolver resolver = new 
-      ContentNegotiatingViewResolver();
-      resolver.setContentNegotiationManager
-      (beanFactory.getBean(ContentNegotiationManager.class));
+    public ContentNegotiatingViewResolver  viewResolver(BeanFactory beanFactory) {
+      ContentNegotiatingViewResolver resolver = new   ContentNegotiatingViewResolver();
+      resolver.setContentNegotiationManager (beanFactory.getBean(ContentNegotiationManager.class));
       resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
       return resolver;
      }
