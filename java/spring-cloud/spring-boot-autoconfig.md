@@ -4,9 +4,9 @@ Auto-configuration is one of the most important features of Spring Boot.
 
 In this section, we will take a quick peek behind the scenes to understand how Spring Boot auto-configuration works.
 
-Most of the Spring Boot auto-configuration magic comes from ~spring-boot-autoconfigure-{version}.jar~. When we start any Spring Boot applications, a number of beans get auto-configured. How does this happen?
+Most of the Spring Boot auto-configuration magic comes from `spring-boot-autoconfigure-{version}.jar`. When we start any Spring Boot applications, a number of beans get auto-configured. How does this happen?
 
-The following screenshot shows an extract from ~spring.factories~ from ~spring-boot-autoconfigure-{version}.jar~. 
+The following screenshot shows an extract from `spring.factories` from `spring-boot-autoconfigure-{version}.jar` 
 
 We have filtered out some of the configuration in the interest of space:
 ~~~properties
