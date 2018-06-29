@@ -80,7 +80,7 @@ class ThreadPrintDemo{
 
 哈哈，楼主刚开始也是这么认为的，但最近通过研究 HB 规则，我发现，去掉 num 的 volatile 修饰也是可以的。
 
-![](pic/happen-before.png)
+![](pic/happen-before.png?raw=true)
 
 我们分析这个图：
 
