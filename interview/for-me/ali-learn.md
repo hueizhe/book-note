@@ -140,7 +140,9 @@ public class SongName {
 
 	public static String getSongName(String query) {
 	            String group1 = "";
-		        String pattern = "@\\{(.*)}";
+		        String pattern  = "@\\{(.*)}";
+		        String pattern1 = "@\\{(\\w*)}";
+		        String pattern2 = "@\\{([\\u4e00-\\u9fa5]*)}";
                 Pattern compile = Pattern.compile(pattern, Pattern.UNICODE_CHARACTER_CLASS);
                 Matcher match = compile.matcher(query);
                 while(match.find()){
